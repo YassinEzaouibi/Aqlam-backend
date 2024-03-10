@@ -1,6 +1,6 @@
 package aqlaam.version2.model.actors;
 
-import aqlaam.version2.model.enums.Role;
+import aqlaam.version2.model.enums.AccountType;
 import aqlaam.version2.model.enums.Sex;
 import jakarta.persistence.*;
 import lombok.*;
@@ -8,7 +8,8 @@ import lombok.*;
 import java.util.Date;
 
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -38,7 +39,7 @@ public abstract class Account {
     @Enumerated(EnumType.STRING)
     private Sex sex;
 
-    @Column(name = "role", nullable = false)
+    @Column(name = "accountType", nullable = false)
     @Enumerated(EnumType.STRING)
-    private Role role;
+    private AccountType accountType;
 }

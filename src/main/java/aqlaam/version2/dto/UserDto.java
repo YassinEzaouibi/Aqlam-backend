@@ -1,6 +1,7 @@
 package aqlaam.version2.dto;
 
-import aqlaam.version2.model.enums.Role;
+import aqlaam.version2.model.actors.User;
+import aqlaam.version2.model.enums.AccountType;
 import aqlaam.version2.model.enums.Sex;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -42,7 +43,7 @@ public class UserDto {
 
     private Sex sex;
 
-    private Role role;
+    private AccountType accountType;
 
     @NotNull(message = "Profile picture cannot be null")
     private String profilePicture;

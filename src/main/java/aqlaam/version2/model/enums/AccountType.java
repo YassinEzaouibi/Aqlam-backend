@@ -1,6 +1,6 @@
 package aqlaam.version2.model.enums;
 
-public enum Role {
+public enum AccountType {
     ADMIN,
     USER
 }

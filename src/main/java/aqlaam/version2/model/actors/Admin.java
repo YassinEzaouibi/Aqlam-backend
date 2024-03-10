@@ -4,21 +4,24 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.hibernate.proxy.HibernateProxy;
 
-@Data
+import java.util.Objects;
+
+@Getter
+@Setter
+@ToString
+@RequiredArgsConstructor
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper = false)
 @Entity
 @Table(name = "admin")
 public class Admin extends Account {
 
     @JsonIgnore
     @Column(name = "is_deleted", nullable = false, columnDefinition = "boolean default false")
-    private Boolean deleted;
+    private Boolean deleted = false;
+
 
 }
