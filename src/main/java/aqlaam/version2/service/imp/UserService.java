@@ -6,57 +6,50 @@ import aqlaam.version2.mapper.UserMapper;
 import aqlaam.version2.model.actors.User;
 import aqlaam.version2.repo.UserRepository;
 import aqlaam.version2.service.IUserService;
-import io.micrometer.common.util.StringUtils;
-import jakarta.validation.ValidationException;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class UserService implements IUserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
-    private static final Logger logger = LoggerFactory.getLogger(AdminService.class);
-
-    @Autowired
-    public UserService(
-            UserRepository userRepository,
-            UserMapper userMapper
-    ) {
-        this.userRepository = userRepository;
-        this.userMapper = userMapper;
-    }
-
+    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
     @Override
     public List<UserDto> getAllUsers() {
-        return null;
+        logger.info("Fetching all users");
+        List<User> users = userRepository.findAllByDeletedIsFalse();
+        return users.stream()
+                .map(userMapper::entityToDto)
+                .collect(Collectors.toList());
     }
 
     @Override
     public UserDto add(UserDto userDto) {
-        validation(userDto);
-        logger.info("Adding a new user with email: {}", userDto.getEmail());
-        Optional<User> userOptional = userRepository.findByEmail(userDto.getEmail());
-        if(userOptional.isPresent()){
-            logger.error("User already exists with same email"+ userDto.getEmail());
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User already exists with same email"+ userDto.getEmail());
+        logger.info("Creating a new user with email: {}", userDto.toString());
+        User userEntity = userMapper.dtoToEntity(userDto);
+        Optional<User> userEntityOptional = userRepository.findByEmail(userEntity.getEmail());
+        if(userEntityOptional.isPresent()){
+            throw new CustomNotFoundException("User already exists with same email and username", HttpStatus.BAD_REQUEST);
         }
-        User user = userMapper.dtoToEntity(userDto);
-        User savedUser = userRepository.save(user);
-        logger.info("User added with id: {}", savedUser.getId());
-        return userMapper.entityToDto(savedUser);
+        User savedUserEntity = userRepository.save(userEntity);
+        logger.info("User created with id: {}", savedUserEntity.getId());
+        return userMapper.entityToDto(savedUserEntity);
     }
+
+
+
     @Override
     public UserDto update(Long id, UserDto userDto) {
-        validation(userDto);
         logger.info("Updating User with id: {}", id);
         User user = userMapper.dtoToEntity(userDto);
         Optional<User> optionalUser = userRepository.findUserByDeletedIsFalseAndId(id);
@@ -68,7 +61,7 @@ public class UserService implements IUserService {
 
         Optional<User> userOptional1 = userRepository.findByEmail(
                 user.getEmail());
-        if(userOptional1.isPresent()){
+        if (userOptional1.isPresent()) {
             logger.error("User already exists with same email");
             throw new CustomNotFoundException("User already exists with same email", HttpStatus.BAD_REQUEST);
         }
@@ -100,7 +93,7 @@ public class UserService implements IUserService {
     public UserDto getUserByEmail(String email) {
         logger.info("Fetching user with email: {}", email);
         Optional<User> optionalUser = userRepository.findByEmail(email);
-        if(optionalUser.isEmpty()){
+        if (optionalUser.isEmpty()) {
             logger.error("User not found with email: {}", email);
             throw new CustomNotFoundException("User not found", HttpStatus.NOT_FOUND);
         }
@@ -111,7 +104,7 @@ public class UserService implements IUserService {
     public void deleteById(Long id) {
         logger.info("Deleting user with id: {}", id);
         Optional<User> optionalUser = userRepository.findUserByDeletedIsFalseAndId(id);
-        if(optionalUser.isEmpty()){
+        if (optionalUser.isEmpty()) {
             logger.error("User not found with id: {}", id);
             throw new CustomNotFoundException("User not found", HttpStatus.NOT_FOUND);
         }
@@ -121,48 +114,15 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public void validation(UserDto userDto) {
-        if (userDto == null) {
-            throw new ValidationException("User data is required.");
+    public UserDto getUserById(Long id) {
+        logger.info("Fetching user with id: {}", id);
+        Optional<User> optionalUser = userRepository.findUserByDeletedIsFalseAndId(id);
+        if (optionalUser.isEmpty()) {
+            throw new CustomNotFoundException("User not found", HttpStatus.NOT_FOUND);
         }
-
-        if (StringUtils.isBlank(userDto.getFirstName())) {
-            throw new ValidationException("First name is required.");
-        }
-
-        if (StringUtils.isBlank(userDto.getLastName())) {
-            throw new ValidationException("Last name is required.");
-        }
-
-        if (userDto.getSex() == null) {
-            throw new ValidationException("Sex is required.");
-        }
-
-        if (userDto.getDateOfBirth() == null) {
-            throw new ValidationException("Date of birth is required.");
-        }
-
-        if (StringUtils.isBlank(userDto.getEmail())) {
-            throw new ValidationException("Email is required.");
-        }
-
-        if (StringUtils.isBlank(userDto.getPassword())) {
-            throw new ValidationException("Password is required.");
-        }
-
-        if (userDto.getAccountType() == null) {
-            throw new ValidationException("Account type is required.");
-        }
-
-        if (StringUtils.isBlank(userDto.getProfilePicture())) {
-            throw new ValidationException("Profile picture is required.");
-        }
-
-        if (userDto.getBookCollectionIds() == null || userDto.getBookCollectionIds().isEmpty()) {
-            throw new ValidationException("At least one book collection id is required.");
-        }
-
+        return userMapper.entityToDto(optionalUser.get());
     }
+
 }
 
 

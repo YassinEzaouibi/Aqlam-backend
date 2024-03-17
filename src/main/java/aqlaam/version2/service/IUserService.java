@@ -12,7 +12,7 @@ public interface IUserService  {
     UserDto getUserByUserName(String userName);
     UserDto getUserByEmail(String email);
     void deleteById(Long id);
-    void validation(UserDto UserDto);
+    UserDto getUserById(Long id);
 
 }
 
