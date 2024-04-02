@@ -1,57 +1,57 @@
 package aqlaam.version2.dto;
 
-
-import aqlaam.version2.model.Book;
 import aqlaam.version2.model.enums.BookCover;
+import aqlaam.version2.model.enums.Category;
 import aqlaam.version2.model.enums.Language;
+import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Value;
 
-import java.util.Date;
+import java.io.Serializable;
+import java.time.LocalDate;
 
 /**
- * DTO for {@link Book}
+ * DTO for {@link aqlaam.version2.model.Book}
  */
-
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
-public class BookDto {
-
-    private Long id;
+@Value
+public class BookDto implements Serializable {
 
     @NotBlank(message = "Title is mandatory")
-    private String title;
+    String title;
 
     @NotBlank(message = "Author is mandatory")
-    private String author;
+    String author;
 
     @Past(message = "Publication date should be in the past")
-    private Date publicationDate;
+    LocalDate publicationDate;
 
     @Min(value = 1, message = "Pages must be greater than 0")
-    private int pages;
+    int pages;
 
     @NotBlank(message = "Description is mandatory")
-    private String description;
+    String description;
 
     @NotNull(message = "Book cover is mandatory")
-    private BookCover cover;
+    BookCover cover;
 
     @NotNull(message = "Language is mandatory")
-    private Language language;
+    Language language;
 
     @NotBlank(message = "Publisher is mandatory")
-    private String publisher;
+    String publisher;
 
     @NotNull(message = "Category is mandatory")
-    private Long categoryId;
+    Category category;
 
-    private String bookPicture;
+    @NotNull(message = "Reference is mandatory")
+    String reference;
 
+    @Nullable
+    String bookPicture;
+
+    @NotNull(message = "User id is mandatory")
+    Long userId;
 }
-

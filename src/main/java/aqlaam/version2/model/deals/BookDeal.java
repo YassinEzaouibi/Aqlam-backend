@@ -15,13 +15,12 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper = false)
 @Entity
 @Table(name = "books_deal")
 public class BookDeal extends Deal {
 
     @OneToMany
-    private List<BookCollection> firstUserCollection;
+    private List<BookCollection> bookCollections;
 
 
 }

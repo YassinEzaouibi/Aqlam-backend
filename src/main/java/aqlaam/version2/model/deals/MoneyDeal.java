@@ -20,11 +20,11 @@ import lombok.NoArgsConstructor;
 @Table(name = "money_deal")
 public class MoneyDeal extends Deal {
 
-    // User 1 gives money to user 2
+    // Person 1 gives money to user 2
     @Column(name = "second_user_given", nullable = false)
     private double amountGivenByTheSecondUser;
 
-    // User 2 Books money to user 1
+    // Person 2 Books money to user 1
     @OneToOne
     private BookCollection collectionGivenByTheFirstUser;
 }

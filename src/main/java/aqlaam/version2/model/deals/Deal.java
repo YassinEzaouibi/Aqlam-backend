@@ -1,7 +1,8 @@
 package aqlaam.version2.model.deals;
 
-import aqlaam.version2.model.actors.User;
+import aqlaam.version2.model.actors.Person;
 import aqlaam.version2.model.enums.DealStatus;
+import aqlaam.version2.model.enums.DealType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,7 +10,6 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
-
 
 @Data
 @AllArgsConstructor
@@ -23,17 +23,21 @@ public abstract class Deal {
     private Long id;
 
     @ManyToOne
-    private User firtsUser;
+    private Person firstUser;
 
     @ManyToOne
-    private User secondUser;
+    private Person secondUser;
 
     @Column(name = "description", nullable = false)
     String description;
 
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
-    private DealStatus status;
+    private DealStatus dealStatus;
+
+    @Column(name = "deal_type", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private DealType dealType;
 
     @CreationTimestamp
     private LocalDateTime createdAt;

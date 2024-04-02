@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html dir="rtl" id="html">
+<head>
+    <title>Simple HTML Page</title>
+    <meta charset="UTF-8">
+    <style>
+        h1 {
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+<div id="content">
+    <p dir="ltr">This text will be displayed from left to right.</p>
+</div>
+<button id="convertButton" onclick="convertDirection()">Convert</button>
+
+<script>
+    function convertDirection() {
+        var contentElement = document.getElementById('content');
+        if (contentElement.dir === 'rtl') {
+            contentElement.dir = 'ltr';
+        } else {
+            contentElement.dir = 'rtl';
+        }
+    }
+</script>
+
+</body>
+</html>

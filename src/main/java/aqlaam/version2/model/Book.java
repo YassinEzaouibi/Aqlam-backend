@@ -1,15 +1,18 @@
 package aqlaam.version2.model;
 
+import aqlaam.version2.model.actors.User;
 import aqlaam.version2.model.enums.BookCover;
+import aqlaam.version2.model.enums.Category;
 import aqlaam.version2.model.enums.Language;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import java.util.Date;
+import java.time.LocalDate;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -27,7 +30,7 @@ public class Book {
     private String author;
 
     @Column(name = "publish_date", nullable = false)
-    private Date publicationDate;
+    private LocalDate publicationDate;
 
     @Column(name = "pages", nullable = false)
     private int pages;
@@ -35,18 +38,33 @@ public class Book {
     @Column(name = "description", nullable = false)
     private String description;
 
-    @Column(name = "cover", nullable = false)
-    private BookCover cover;
-
-    @Column(name = "language", nullable = false)
-    private Language language;
-
     @Column(name = "publisher", nullable = false)
     private String publisher;
 
-    @OneToOne
-    private Category category;
-
     @Column(name = "book_picture", nullable = false)
     private String bookPicture;
+
+    @Column(name = "cover", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private BookCover cover;
+
+    @Column(name = "language", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Language language;
+
+    @Column(name = "category", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Category category;
+
+    @Column(name = "reference", nullable = false)
+    private String reference;
+
+    @JsonBackReference
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @JsonIgnore
+    @Column(name = "is_deleted", nullable = false, columnDefinition = "boolean default false")
+    private Boolean deleted = false;
 }

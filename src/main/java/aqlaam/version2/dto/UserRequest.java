@@ -1,43 +1,35 @@
 package aqlaam.version2.dto;
 
-import aqlaam.version2.model.BookCollection;
-import aqlaam.version2.model.actors.User;
-import aqlaam.version2.model.enums.AccountType;
 import aqlaam.version2.model.enums.Sex;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.*;
-import lombok.Builder;
-import lombok.Data;
+import lombok.Value;
 
+import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
 /**
- * DTO for {@link User}
-*/
-
-
-@Data
-@Builder
-public class UserDto {
-
-    private Long id;
+ * DTO for {@link aqlaam.version2.model.actors.User}
+ */
+@Value
+public class UserRequest implements Serializable {
 
     @NotBlank(message = "First name is mandatory")
     @Size(min = 2, max = 20, message = "First name must be between 2 and 15 characters")
-    private String firstName;
+    String firstName;
 
     @NotBlank(message = "Last name is mandatory")
     @Size(min = 2, max = 20, message = "Last name must be between 2 and 20 characters")
-    private String lastName;
+    String lastName;
 
     @NotBlank(message = "Username is mandatory")
     @Size(min = 2, max = 20, message = "Username must be between 2 and 20 characters")
-    private String userName;
+    String userName;
 
     @Email(message = "Email should be valid")
     @NotBlank(message = "Email is mandatory")
-    private String email;
+    String email;
 
     @NotBlank(message = "Password is mandatory")
     @Size(min = 8, message = "Password must be at least 8 characters long")
@@ -45,23 +37,17 @@ public class UserDto {
             regexp = "^(?=.*[0-9])(?=.*[a-zA-Z])(?=\\S+$).{6,12}$",
             message = "Password must contain at least 8 characters, one digit, one lowercase, one uppercase and one special character"
     )
-    private String password;
+    String password;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     @Past(message = "Date of birth should be in the past")
     @NotNull
-    private Date dateOfBirth;
+    Date dateOfBirth;
 
     @NotNull(message = "Sex cannot be blank")
-    private Sex sex;
+    Sex sex;
 
-    @NotNull(message = "Account type cannot be blank")
-    private AccountType accountType;
-
-    private String profilePicture;
-
-    private List<BookCollection> bookCollections;
+    String profilePicture;
 
 
 }
-
