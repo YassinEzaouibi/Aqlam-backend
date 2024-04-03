@@ -24,6 +24,8 @@ public class AdminService implements IAdminService {
     private final AdminMapper adminMapper;
 
     private static final Logger logger = LoggerFactory.getLogger(AdminService.class);
+    private static final String ADMIN_NOT_FOUND = "Admin not found";
+
 
     @Override
     public List<AdminDto> getAllAdmins() {
@@ -70,7 +72,7 @@ public class AdminService implements IAdminService {
         Admin admin = adminMapper.toEntity(adminDto);
 
         Optional<Admin> optionalAdmin = adminRepository.findAdminByIdAndDeletedFalse(id);
-        Admin exestingAdmin = optionalAdmin.orElseThrow(() -> new CustomNotFoundException("Admin not found", HttpStatus.NOT_FOUND));
+        Admin exestingAdmin = optionalAdmin.orElseThrow(() -> new CustomNotFoundException(ADMIN_NOT_FOUND, HttpStatus.NOT_FOUND));
 
         Optional<Admin> optionalAdmin2 = adminRepository.findAdminByEmailAndDeletedFalse(admin.getEmail());
         if (optionalAdmin2.isPresent()){
@@ -94,7 +96,7 @@ public class AdminService implements IAdminService {
         Optional<Admin> optionalAdmin = adminRepository.findAdminByEmail(email);
         if (optionalAdmin.isEmpty()) {
             logger.error("Admin not found with email: {}", email);
-            throw new CustomNotFoundException("Admin not found", HttpStatus.NOT_FOUND);
+            throw new CustomNotFoundException(ADMIN_NOT_FOUND, HttpStatus.NOT_FOUND);
         }
         return adminMapper.toDto(optionalAdmin.get());
     }
@@ -105,7 +107,7 @@ public class AdminService implements IAdminService {
         Optional<Admin> optionalAdmin = adminRepository.findAdminByIdAndDeletedFalse(id);
         if (optionalAdmin.isEmpty()) {
             logger.error("Admin not found with id: {}", id);
-            throw new CustomNotFoundException("Admin not found", HttpStatus.NOT_FOUND);
+            throw new CustomNotFoundException(ADMIN_NOT_FOUND, HttpStatus.NOT_FOUND);
         }
         adminRepository.deleteById(id);
         logger.info("Admin deleted with id: {}", id);
@@ -116,7 +118,7 @@ public class AdminService implements IAdminService {
         logger.info("Getting admin with id: {}", id);
         Optional<Admin> optionalAdmin = adminRepository.findAdminByIdAndDeletedFalse(id);
         if(optionalAdmin.isEmpty()){
-            throw new CustomNotFoundException("Admin not found", HttpStatus.NOT_FOUND);
+            throw new CustomNotFoundException(ADMIN_NOT_FOUND, HttpStatus.NOT_FOUND);
         }
         return adminMapper.toDto(optionalAdmin.get());
     }

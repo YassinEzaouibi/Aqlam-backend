@@ -7,7 +7,6 @@ import aqlaam.version2.model.BookCollection;
 import org.mapstruct.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
 public interface BookCollectionMapper {
@@ -23,7 +22,7 @@ public interface BookCollectionMapper {
     BookCollection partialUpdate(BookCollectionRequest bookCollectionRequest, @MappingTarget BookCollection bookCollection);
 
     default List<Long> booksToBookIds(List<Book> books) {
-        return books.stream().map(Book::getId).collect(Collectors.toList());
+        return books.stream().map(Book::getId).toList();
     }
 
     @Mapping(source = "userName", target = "user.userName")

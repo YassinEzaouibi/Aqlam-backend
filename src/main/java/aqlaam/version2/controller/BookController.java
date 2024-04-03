@@ -1,7 +1,6 @@
 package aqlaam.version2.controller;
 
 import aqlaam.version2.dto.BookDto;
-import aqlaam.version2.model.Book;
 import aqlaam.version2.model.enums.Category;
 import aqlaam.version2.service.interfaces.IBookService;
 import jakarta.validation.Valid;
