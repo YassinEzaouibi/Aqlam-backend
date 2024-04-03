@@ -26,7 +26,7 @@ public interface BookCollectionMapper {
         return books.stream().map(Book::getId).collect(Collectors.toList());
     }
 
-    @Mapping(source = "userUserName", target = "user.userName")
+    @Mapping(source = "userName", target = "user.userName")
     @Mapping(source = "userId", target = "user.id")
     BookCollection responseToEntity(BookCollectionResponse bookCollectionResponse);
 

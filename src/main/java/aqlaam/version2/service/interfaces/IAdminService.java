@@ -12,5 +12,6 @@ public interface IAdminService {
     AdminDto update(Long id, AdminDto adminDto);
     AdminDto getAdminByEmail(String email);
     void deleteById(Long id);
+    List<AdminDto> getAll();
     AdminDto getAdminById(Long id);
 }

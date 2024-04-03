@@ -35,6 +35,15 @@ public class AdminService implements IAdminService {
     }
 
     @Override
+    public List<AdminDto> getAll() {
+        logger.info("Fetching all super roles admin and managers");
+        List<Admin> admins = adminRepository.findAll();
+        return admins.stream()
+                .map(adminMapper::toDto)
+                .toList();
+    }
+
+    @Override
     public List<AdminDto> getAllManagers() {
         logger.info("Fetching all managers");
         List<Admin> managers = adminRepository.findAllByAccountTypeAndDeletedFalse(AccountType.MANAGER);

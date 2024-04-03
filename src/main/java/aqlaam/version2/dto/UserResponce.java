@@ -33,6 +33,7 @@ public class UserResponce implements Serializable {
     public static class BookCollectionDto implements Serializable {
         Long id;
         String title;
+        List<BookDto> books;
     }
 
     /**

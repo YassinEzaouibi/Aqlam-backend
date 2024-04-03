@@ -17,7 +17,7 @@ public class BookCollectionResponse implements Serializable {
     BookCollectionType type;
     List<BookDto1> books;
     Long userId;
-    String userUserName;
+    String userName;
 
     /**
      * DTO for {@link aqlaam.version2.model.Book}

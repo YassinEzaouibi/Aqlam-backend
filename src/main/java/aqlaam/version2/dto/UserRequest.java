@@ -2,7 +2,6 @@ package aqlaam.version2.dto;
 
 import aqlaam.version2.model.enums.Sex;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.*;
 import lombok.Value;
 
@@ -24,7 +23,7 @@ public class UserRequest implements Serializable {
     String lastName;
 
     @NotBlank(message = "Username is mandatory")
-    @Size(min = 2, max = 20, message = "Username must be between 2 and 20 characters")
+    @Pattern(regexp = "^[a-z0-9_-]{5,15}$", message = "Username must be 5-15 characters long and can only include lowercase letters, digits, underscores, and hyphens")
     String userName;
 
     @Email(message = "Email should be valid")
@@ -34,7 +33,7 @@ public class UserRequest implements Serializable {
     @NotBlank(message = "Password is mandatory")
     @Size(min = 8, message = "Password must be at least 8 characters long")
     @Pattern(
-            regexp = "^(?=.*[0-9])(?=.*[a-zA-Z])(?=\\S+$).{6,12}$",
+            regexp = "^(?=.*\\d)(?=.*[a-zA-Z])(?=\\S+$).{6,12}$",
             message = "Password must contain at least 8 characters, one digit, one lowercase, one uppercase and one special character"
     )
     String password;

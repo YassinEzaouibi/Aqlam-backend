@@ -23,6 +23,8 @@ public class UserService implements IUserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
+    private static final String USER_NOT_FOUND = "User not found";
+    private static final String EMAIL_ALREADY_EXIST = "User already exists with same email";
 
     @Override
     public List<UserResponce> getAllUsers() {
@@ -37,10 +39,20 @@ public class UserService implements IUserService {
     public UserResponce add(UserRequest userDto) {
         logger.info("Creating a new user with email: {}", userDto.getEmail());
         User userEntity = userMapper.requestToEntity(userDto);
-        Optional<User> userEntityOptional = userRepository.findByEmail(userEntity.getEmail());
-        if(userEntityOptional.isPresent()){
-            throw new CustomNotFoundException("User already exists with same email", HttpStatus.BAD_REQUEST);
+
+        // check if user exists on the database with an existing email
+        Optional<User> userEntityOptionalEmail = userRepository.findByEmail(userEntity.getEmail());
+        if(userEntityOptionalEmail.isPresent()){
+            throw new CustomNotFoundException(EMAIL_ALREADY_EXIST, HttpStatus.BAD_REQUEST);
         }
+
+        // check if user exists on the database with an existing username
+        Optional<User> userEntityOptionalUserName = userRepository.findByUserName(userEntity.getUserName());
+        if(userEntityOptionalUserName.isPresent()){
+            throw new CustomNotFoundException("User already exists with same username", HttpStatus.BAD_REQUEST);
+        }
+
+
         User savedUserEntity = userRepository.save(userEntity);
         logger.info("User created with id: {}", savedUserEntity.getId());
         return userMapper.entityToResponse(savedUserEntity);
@@ -56,14 +68,14 @@ public class UserService implements IUserService {
         Optional<User> optionalUser = userRepository.findUserByDeletedIsFalseAndId(id);
         User existingUser = optionalUser.orElseThrow(() -> {
             logger.error("User not found with id: {}", id);
-            return new CustomNotFoundException("User not found", HttpStatus.NOT_FOUND);
+            return new CustomNotFoundException(USER_NOT_FOUND, HttpStatus.NOT_FOUND);
         });
 
         Optional<User> userOptional1 = userRepository.findByEmail(
                 user.getEmail());
         if (userOptional1.isPresent()) {
-            logger.error("User already exists with same email");
-            throw new CustomNotFoundException("User already exists with same email", HttpStatus.BAD_REQUEST);
+            logger.error(EMAIL_ALREADY_EXIST);
+            throw new CustomNotFoundException(EMAIL_ALREADY_EXIST, HttpStatus.BAD_REQUEST);
         }
 
         existingUser.setEmail(user.getEmail());
@@ -85,7 +97,7 @@ public class UserService implements IUserService {
         Optional<User> optionalUser = userRepository.findByUserName(userName);
         if (optionalUser.isEmpty()) {
             logger.error("User not found with name: {}", userName);
-            throw new CustomNotFoundException("User not found", HttpStatus.NOT_FOUND);
+            throw new CustomNotFoundException(USER_NOT_FOUND, HttpStatus.NOT_FOUND);
         }
         return userMapper.entityToResponse(optionalUser.get());
     }
@@ -96,7 +108,7 @@ public class UserService implements IUserService {
         Optional<User> optionalUser = userRepository.findByEmail(email);
         if (optionalUser.isEmpty()) {
             logger.error("User not found with email: {}", email);
-            throw new CustomNotFoundException("User not found", HttpStatus.NOT_FOUND);
+            throw new CustomNotFoundException(USER_NOT_FOUND, HttpStatus.NOT_FOUND);
         }
         return userMapper.entityToResponse(optionalUser.get());
     }
@@ -107,7 +119,7 @@ public class UserService implements IUserService {
         Optional<User> optionalUser = userRepository.findUserByDeletedIsFalseAndId(id);
         if (optionalUser.isEmpty()) {
             logger.error("User not found with id: {}", id);
-            throw new CustomNotFoundException("User not found", HttpStatus.NOT_FOUND);
+            throw new CustomNotFoundException(USER_NOT_FOUND, HttpStatus.NOT_FOUND);
         }
         userRepository.deleteById(id);
         logger.info("User deleted with id: {}", id);
@@ -119,7 +131,7 @@ public class UserService implements IUserService {
         logger.info("Fetching user with id: {}", id);
         Optional<User> optionalUser = userRepository.findUserByDeletedIsFalseAndId(id);
         if (optionalUser.isEmpty()) {
-            throw new CustomNotFoundException("User not found", HttpStatus.NOT_FOUND);
+            throw new CustomNotFoundException(USER_NOT_FOUND, HttpStatus.NOT_FOUND);
         }
         return userMapper.entityToResponse(optionalUser.get());
     }
