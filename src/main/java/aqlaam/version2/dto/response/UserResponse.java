@@ -1,6 +1,6 @@
-package aqlaam.version2.dto;
+package aqlaam.version2.dto.response;
 
-import aqlaam.version2.model.enums.AccountType;
+import aqlaam.version2.model.actors.User;
 import aqlaam.version2.model.enums.Sex;
 import lombok.Value;
 
@@ -9,10 +9,10 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * DTO for {@link aqlaam.version2.model.actors.User}
+ * DTO for {@link User}
  */
 @Value
-public class UserResponce implements Serializable {
+public class UserResponse implements Serializable {
     Long id;
     String firstName;
     String lastName;
@@ -22,18 +22,17 @@ public class UserResponce implements Serializable {
     Sex sex;
     String userName;
     String profilePicture;
-    List<BookCollectionDto> booksCollections;
+    List<OwnedBookCollectionDto> booksCollections;
+    List<Long> favoriteBookCollectionIds;
     List<BookDto> books;
-    AccountType accountType;
 
     /**
-     * DTO for {@link aqlaam.version2.model.BookCollection}
+     * DTO for {@link aqlaam.version2.model.collections.OwnedBookCollection}
      */
     @Value
-    public static class BookCollectionDto implements Serializable {
+    public static class OwnedBookCollectionDto implements Serializable {
         Long id;
         String title;
-        List<BookDto> books;
     }
 
     /**
@@ -42,6 +41,7 @@ public class UserResponce implements Serializable {
     @Value
     public static class BookDto implements Serializable {
         Long id;
+        String title;
         String reference;
     }
 }

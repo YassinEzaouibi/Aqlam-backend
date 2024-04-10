@@ -1,7 +1,8 @@
 package aqlaam.version2.model.actors;
 
 import aqlaam.version2.model.Book;
-import aqlaam.version2.model.BookCollection;
+import aqlaam.version2.model.collections.FavoriteBookCollection;
+import aqlaam.version2.model.collections.OwnedBookCollection;
 import aqlaam.version2.model.enums.AccountType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -27,7 +28,12 @@ public class User extends Person {
     @ToString.Exclude
     @JsonManagedReference
     @OneToMany(mappedBy = "user")
-    private List<BookCollection> booksCollections = new ArrayList<>();
+    private List<OwnedBookCollection> booksCollections = new ArrayList<>();
+
+    @ToString.Exclude
+    @JsonManagedReference
+    @OneToMany(mappedBy = "user")
+    private List<FavoriteBookCollection> favoriteBookCollections = new ArrayList<>();
 
     @ToString.Exclude
     @JsonManagedReference

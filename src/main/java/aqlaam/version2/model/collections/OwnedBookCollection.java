@@ -1,7 +1,7 @@
-package aqlaam.version2.model;
+package aqlaam.version2.model.collections;
 
+import aqlaam.version2.model.Book;
 import aqlaam.version2.model.actors.User;
-import aqlaam.version2.model.enums.BookCollectionType;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -14,8 +14,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "book_collection")
-public class BookCollection {
+@Table(name = "owned_book_collection")
+public class OwnedBookCollection {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,10 +26,6 @@ public class BookCollection {
 
     @Column(name = "description", nullable = false)
     private String description;
-
-    @Column(name = "type", nullable = false)
-    @Enumerated(EnumType.STRING)
-    private BookCollectionType type;
 
     @JsonBackReference
     @OneToMany

@@ -3,6 +3,7 @@ package aqlaam.version2.controller;
 import aqlaam.version2.dto.AdminDto;
 import aqlaam.version2.service.implemntation.AdminService;
 
+import aqlaam.version2.service.interfaces.IAdminService;
 import jakarta.validation.Valid;
 
 import lombok.RequiredArgsConstructor;
@@ -21,31 +22,31 @@ import org.slf4j.Logger;
 @RequiredArgsConstructor
 public class AdminController {
 
-    private final AdminService adminService;
+    private final IAdminService adminService;
 
     private static final Logger logger = LoggerFactory.getLogger(AdminController.class);
 
     @PostMapping("/add")
-    ResponseEntity<AdminDto> addAdmin(@RequestBody @Valid AdminDto admin){
+    public ResponseEntity<AdminDto> addAdmin(@RequestBody @Valid AdminDto admin){
         logger.info("this is the account type: {}", admin.getAccountType());
         AdminDto adminDto = adminService.add(admin);
         return new ResponseEntity<>(adminDto, HttpStatus.CREATED);
     }
 
     @GetMapping("/admins")
-    ResponseEntity<List<AdminDto>> getAllAdmins(){
+    public ResponseEntity<List<AdminDto>> getAllAdmins(){
         List<AdminDto> admins = adminService.getAllAdmins();
         return new ResponseEntity<>(admins, HttpStatus.OK);
     }
 
     @GetMapping("/managers")
-    ResponseEntity<List<AdminDto>> getAllManagers(){
+    public ResponseEntity<List<AdminDto>> getAllManagers(){
         List<AdminDto> managers = adminService.getAllManagers();
         return new ResponseEntity<>(managers, HttpStatus.OK);
     }
 
     @GetMapping("/all")
-    ResponseEntity<List<AdminDto>> getAll(){
+    public ResponseEntity<List<AdminDto>> getAll(){
         List<AdminDto> admins = adminService.getAllAdmins();
         List<AdminDto> managers = adminService.getAllAdmins();
         List<AdminDto> all = new ArrayList<>();
@@ -55,20 +56,20 @@ public class AdminController {
     }
 
     @GetMapping("/{id}")
-    ResponseEntity<AdminDto> getAdminById(@PathVariable Long id){
+    public ResponseEntity<AdminDto> getAdminById(@PathVariable Long id){
         AdminDto admin = adminService.getAdminById(id);
         return new ResponseEntity<>(admin, HttpStatus.OK);
     }
 
     @GetMapping("/email")
-    ResponseEntity<AdminDto> getAdminByEmail(@RequestParam String email){
+    public ResponseEntity<AdminDto> getAdminByEmail(@RequestParam String email){
         AdminDto admin = adminService.getAdminByEmail(email);
         return new ResponseEntity<>(admin, HttpStatus.OK);
     }
 
     // update admin
     @PutMapping("/update/{id}")
-    ResponseEntity<AdminDto> updateAdmin(@PathVariable Long id, @RequestBody @Valid AdminDto admin){
+    public ResponseEntity<AdminDto> updateAdmin(@PathVariable Long id, @RequestBody @Valid AdminDto admin){
         AdminDto updatedAdmin = adminService.update(id, admin);
         return new ResponseEntity<>(updatedAdmin, HttpStatus.OK);
     }

@@ -1,7 +1,7 @@
 package aqlaam.version2.service.implemntation;
 
-import aqlaam.version2.dto.UserRequest;
-import aqlaam.version2.dto.UserResponce;
+import aqlaam.version2.dto.request.UserRequest;
+import aqlaam.version2.dto.response.UserResponse;
 import aqlaam.version2.exception.CustomNotFoundException;
 import aqlaam.version2.mapper.UserMapper;
 import aqlaam.version2.model.actors.User;
@@ -21,24 +21,25 @@ import java.util.Optional;
 public class UserService implements IUserService {
 
     private final UserRepository userRepository;
+
     private final UserMapper userMapper;
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
     private static final String USER_NOT_FOUND = "User not found";
     private static final String EMAIL_ALREADY_EXIST = "User already exists with same email";
 
     @Override
-    public List<UserResponce> getAllUsers() {
+    public List<UserResponse> getAllUsers() {
         logger.info("Fetching all users");
         List<User> users = userRepository.findAllByDeletedIsFalse();
         return users.stream()
-                .map(userMapper::entityToResponse)
+                .map(userMapper::toDto1)
                 .toList();
     }
 
     @Override
-    public UserResponce add(UserRequest userDto) {
+    public UserResponse add(UserRequest userDto) {
         logger.info("Creating a new user with email: {}", userDto.getEmail());
-        User userEntity = userMapper.requestToEntity(userDto);
+        User userEntity = userMapper.toEntity(userDto);
 
         // check if user exists on the database with an existing email
         Optional<User> userEntityOptionalEmail = userRepository.findByEmail(userEntity.getEmail());
@@ -55,15 +56,15 @@ public class UserService implements IUserService {
 
         User savedUserEntity = userRepository.save(userEntity);
         logger.info("User created with id: {}", savedUserEntity.getId());
-        return userMapper.entityToResponse(savedUserEntity);
+        return userMapper.toDto1(savedUserEntity);
     }
 
 
 
     @Override
-    public UserResponce update(Long id, UserRequest userDto) {
+    public UserResponse update(Long id, UserRequest userDto) {
         logger.info("Updating User with id: {}", id);
-        User user = userMapper.requestToEntity(userDto);
+        User user = userMapper.toEntity(userDto);
 
         Optional<User> optionalUser = userRepository.findUserByDeletedIsFalseAndId(id);
         User existingUser = optionalUser.orElseThrow(() -> {
@@ -87,30 +88,30 @@ public class UserService implements IUserService {
 
         User savedUser = userRepository.save(existingUser);
         logger.info("User updated with id: {}", savedUser.getId());
-        return userMapper.entityToResponse(savedUser);
+        return userMapper.toDto1(savedUser);
 
     }
 
     @Override
-    public UserResponce getUserByUserName(String userName) {
+    public UserResponse getUserByUserName(String userName) {
         logger.info("Fetching user with user name: {}", userName);
         Optional<User> optionalUser = userRepository.findByUserName(userName);
         if (optionalUser.isEmpty()) {
             logger.error("User not found with name: {}", userName);
             throw new CustomNotFoundException(USER_NOT_FOUND, HttpStatus.NOT_FOUND);
         }
-        return userMapper.entityToResponse(optionalUser.get());
+        return userMapper.toDto1(optionalUser.get());
     }
 
     @Override
-    public UserResponce getUserByEmail(String email) {
+    public UserResponse getUserByEmail(String email) {
         logger.info("Fetching user with email: {}", email);
         Optional<User> optionalUser = userRepository.findByEmail(email);
         if (optionalUser.isEmpty()) {
             logger.error("User not found with email: {}", email);
             throw new CustomNotFoundException(USER_NOT_FOUND, HttpStatus.NOT_FOUND);
         }
-        return userMapper.entityToResponse(optionalUser.get());
+        return userMapper.toDto1(optionalUser.get());
     }
 
     @Override
@@ -127,13 +128,13 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public UserResponce getUserById(Long id) {
+    public UserResponse getUserById(Long id) {
         logger.info("Fetching user with id: {}", id);
         Optional<User> optionalUser = userRepository.findUserByDeletedIsFalseAndId(id);
         if (optionalUser.isEmpty()) {
             throw new CustomNotFoundException(USER_NOT_FOUND, HttpStatus.NOT_FOUND);
         }
-        return userMapper.entityToResponse(optionalUser.get());
+        return userMapper.toDto1(optionalUser.get());
     }
 
 }

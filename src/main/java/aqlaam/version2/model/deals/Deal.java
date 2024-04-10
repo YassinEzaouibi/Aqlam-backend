@@ -1,8 +1,10 @@
 package aqlaam.version2.model.deals;
 
 import aqlaam.version2.model.actors.Person;
+import aqlaam.version2.model.actors.User;
 import aqlaam.version2.model.enums.DealStatus;
 import aqlaam.version2.model.enums.DealType;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,11 +24,15 @@ public abstract class Deal {
     @GeneratedValue(strategy = GenerationType.TABLE)
     private Long id;
 
+    @JsonBackReference
     @ManyToOne
-    private Person firstUser;
+    @JoinColumn(name = "first_user_id")
+    private User firstUser;
 
+    @JsonBackReference
     @ManyToOne
-    private Person secondUser;
+    @JoinColumn(name = "second_user_id")
+    private User secondUser;
 
     @Column(name = "description", nullable = false)
     String description;
@@ -44,5 +50,10 @@ public abstract class Deal {
 
     @CreationTimestamp
     private LocalDateTime finishedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+    }
 
 }

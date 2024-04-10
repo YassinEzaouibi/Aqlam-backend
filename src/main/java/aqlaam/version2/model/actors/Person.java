@@ -1,16 +1,10 @@
 package aqlaam.version2.model.actors;
 
-import aqlaam.version2.model.Book;
-import aqlaam.version2.model.BookCollection;
-import aqlaam.version2.model.enums.AccountType;
 import aqlaam.version2.model.enums.Sex;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 
 @Getter
