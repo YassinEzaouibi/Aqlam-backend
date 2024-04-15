@@ -1,154 +1,146 @@
-/*
-package aqlaam.version2.service.imp;
+package aqlaam.version2.service.implemntation;
 
-import aqlaam.version2.dto.UserResponce;
+import aqlaam.version2.dto.request.UserRequest;
+import aqlaam.version2.dto.response.UserResponse;
 import aqlaam.version2.exception.CustomNotFoundException;
-import aqlaam.version2.model.enums.AccountType;
+import aqlaam.version2.mapper.UserMapper;
+import aqlaam.version2.model.actors.User;
 import aqlaam.version2.model.enums.Sex;
 import aqlaam.version2.repo.UserRepository;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Date;
-import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 class UserServiceTest {
 
-    @Autowired
     private UserRepository userRepository;
-
-    @Autowired
+    private UserMapper userMapper;
+    private PasswordEncoder passwordEncoder;
     private UserService userService;
 
     @BeforeEach
     void setUp() {
-        userRepository.deleteAll();
+        userRepository = mock(UserRepository.class);
+        userMapper = mock(UserMapper.class);
+        passwordEncoder = mock(PasswordEncoder.class);
+        userService = new UserService(userRepository, userMapper, passwordEncoder);
     }
 
-    private UserResponce createUserDto() {
-        return UserResponce.builder()
-                .firstName("Test")
-                .lastName("Person")
-                .userName("@Geru")
-                .email("test@test.com")
+    @Test
+    void shouldAddUserWhenEmailAndUsernameAreUnique() {
+        UserRequest userDto = UserRequest.builder()
+                .firstName("John")
+                .lastName("Doe")
+                .email("john.doe@example.com")
                 .password("password")
-                .profilePicture("password")
                 .dateOfBirth(new Date())
                 .sex(Sex.MALE)
+                .userName("john.doe")
                 .build();
-    }
-
-    @AfterEach
-    void tearDown() {
-        userRepository.deleteAll();
-    }
-
-    @Test
-    void testGetAllUsers() {
-        UserResponce userDto = createUserDto();
-        userService.add(userDto);
-
-        // Act
-        List<UserResponce> result = userService.getAllUsers();
-
-        // Assert
-        assertFalse(result.isEmpty());
-        assertEquals(1, result.size());
-        assertEquals(userDto.getFirstName(), result.get(0).getFirstName());
+        User user = new User();
+        UserResponse userResponse = UserResponse.builder()
+                .id(1L)
+                .firstName("John")
+                .lastName("Doe")
+                .email("john.doe@example.com")
+                .userName("john.doe")
+                .build();
+        when(userMapper.toEntity(userDto)).thenReturn(user);
+        when(userRepository.findUserByEmailAndDeletedFalse(any())).thenReturn(Optional.empty());
+        when(passwordEncoder.encode(any())).thenReturn("hashedPassword");
+        when(userRepository.save(any())).thenReturn(user);
+        when(userMapper.toDto1(user)).thenReturn(userResponse);
+        UserResponse addedUser = userService.add(userDto);
+        assertNotNull(addedUser);
+        assertEquals(userResponse, addedUser);
     }
 
     @Test
-    void testAdd() {
-        UserResponce userDto = createUserDto();
-
-        // Act
-        UserResponce result = userService.add(userDto);
-
-        // Assert
-        assertEquals(userDto.getFirstName(), result.getFirstName());
-        assertEquals(userDto.getLastName(), result.getLastName());
-        assertEquals(userDto.getEmail(), result.getEmail());
-        assertEquals(userDto.getPassword(), result.getPassword());
-        assertEquals(userDto.getDateOfBirth(), result.getDateOfBirth());
-        assertEquals(userDto.getSex(), result.getSex());
+    void shouldThrowExceptionWhenEmailAlreadyExists() {
+        UserRequest userDto = UserRequest.builder()
+                .firstName("John")
+                .lastName("Doe")
+                .email("john.doe@example.com")
+                .password("password")
+                .dateOfBirth(new Date())
+                .sex(Sex.MALE)
+                .userName("john.doe")
+                .build();
+        User user = new User();
+        when(userMapper.toEntity(userDto)).thenReturn(user);
+        when(userRepository.findUserByEmailAndDeletedFalse(any())).thenReturn(Optional.of(user));
+        assertThrows(CustomNotFoundException.class, () -> userService.add(userDto));
     }
 
     @Test
-    void testUpdate() {
-        UserResponce userDto = createUserDto();
-        UserResponce savedUser = userService.add(userDto);
-
-        savedUser.setFirstName("UpdatedName");
-        savedUser.setLastName("UpdatedLastName");
-        savedUser.setEmail("updated@test.com");
-        savedUser.setPassword("updatedPassword");
-        savedUser.setDateOfBirth(new Date());
-        savedUser.setSex(Sex.FEMALE);
-
-        // Act
-        UserResponce result = userService.update(1L, savedUser);
-
-        // Assert
-        assertEquals("UpdatedName", result.getFirstName());
-        assertEquals("UpdatedLastName", result.getLastName());
-        assertEquals("updated@test.com", result.getEmail());
-        assertEquals("updatedPassword", result.getPassword());
-        assertEquals(savedUser.getDateOfBirth(), result.getDateOfBirth());
-        assertEquals(Sex.FEMALE, result.getSex());
+    void shouldUpdateUserWhenEmailIsUnique() {
+        Long id = 1L;
+        UserRequest userDto = UserRequest.builder()
+                .firstName("John")
+                .lastName("Doe")
+                .email("john.doe@example.com")
+                .password("password")
+                .dateOfBirth(new Date())
+                .sex(Sex.MALE)
+                .userName("john.doe")
+                .build();
+        User user = new User();
+        UserResponse userResponse = UserResponse.builder()
+                .id(id)
+                .firstName("John")
+                .lastName("Doe")
+                .email("john.doe@example.com")
+                .userName("john.doe")
+                .build();
+        when(userMapper.toEntity(userDto)).thenReturn(user);
+        when(userRepository.findUserByDeletedIsFalseAndId(id)).thenReturn(Optional.of(user));
+        when(userRepository.findUserByEmailAndDeletedFalse(any())).thenReturn(Optional.empty());
+        when(passwordEncoder.encode(any())).thenReturn("hashedPassword");
+        when(userRepository.save(any())).thenReturn(user);
+        when(userMapper.toDto1(user)).thenReturn(userResponse);
+        UserResponse updatedUser = userService.update(id, userDto);
+        assertNotNull(updatedUser);
+        assertEquals(userResponse, updatedUser);
     }
 
     @Test
-    void testGetUserByUserName() {
-        UserResponce userDto = createUserDto();
-        UserResponce savedUser = userService.add(userDto);
-
-        // Act
-        UserResponce result = userService.getUserByUserName(savedUser.getUserName());
-
-        // Assert
-        assertEquals(savedUser.getUserName(), result.getUserName());
+    void shouldThrowExceptionWhenUpdatingNonExistingUser() {
+        Long id = 1L;
+        UserRequest userDto = UserRequest.builder()
+                .firstName("John")
+                .lastName("Doe")
+                .email("john.doe@example.com")
+                .password("password")
+                .dateOfBirth(new Date())
+                .sex(Sex.MALE)
+                .userName("john.doe")
+                .build();
+        User user = new User();
+        when(userMapper.toEntity(userDto)).thenReturn(user);
+        when(userRepository.findUserByDeletedIsFalseAndId(id)).thenReturn(Optional.empty());
+        assertThrows(CustomNotFoundException.class, () -> userService.update(id, userDto));
     }
 
     @Test
-    void testGetUserByEmail() {
-        UserResponce userDto = createUserDto();
-        UserResponce savedUser = userService.add(userDto);
-
-        // Act
-        UserResponce result = userService.getUserByEmail(savedUser.getEmail());
-
-        // Assert
-        assertEquals(savedUser.getUserName(), result.getUserName());
+    void shouldDeleteUserWhenExists() {
+        Long id = 1L;
+        User user = new User();
+        when(userRepository.findUserByDeletedIsFalseAndId(id)).thenReturn(Optional.of(user));
+        assertDoesNotThrow(() -> userService.deleteById(id));
     }
 
     @Test
-    void testDeleteById() {
-        UserResponce userDto = createUserDto();
-        UserResponce savedUser = userService.add(userDto);
-
-        // Act
-        userService.deleteById(savedUser.getId());
-
-        // Assert
-        assertThrows(CustomNotFoundException.class, () -> userService.getUserById(savedUser.getId()));
-
+    void shouldThrowExceptionWhenDeletingNonExistingUser() {
+        Long id = 1L;
+        when(userRepository.findUserByDeletedIsFalseAndId(id)).thenReturn(Optional.empty());
+        assertThrows(CustomNotFoundException.class, () -> userService.deleteById(id));
     }
-
-    @Test
-    void getUserById() {
-        UserResponce userDto = createUserDto();
-        UserResponce savedUser = userService.add(userDto);
-
-        // Act
-        UserResponce result = userService.getUserById(savedUser.getId());
-
-        // Assert
-        assertEquals(savedUser.getUserName(), result.getUserName());
-    }
-}*/
+}

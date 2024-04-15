@@ -6,7 +6,6 @@ import aqlaam.version2.model.enums.Language;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.*;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Value;
 
 import java.io.Serializable;
@@ -15,8 +14,8 @@ import java.time.LocalDate;
 /**
  * DTO for {@link aqlaam.version2.model.Book}
  */
-@Builder
 @Value
+@Builder
 public class BookDto implements Serializable {
 
     @NotBlank(message = "Title is mandatory")

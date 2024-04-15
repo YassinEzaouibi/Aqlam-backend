@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,6 +23,7 @@ public class BookCollectionController {
     private static final Logger logger = LoggerFactory.getLogger(BookCollectionController.class);
 
     @PostMapping("/add")
+    @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<OwnedBookCollectionResponse> createCollection(
             @RequestBody @Valid OwnedBookCollectionRequest collectionRequest
     ) {
@@ -32,6 +34,7 @@ public class BookCollectionController {
     }
 
     @GetMapping("/all")
+    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
     public ResponseEntity<List<OwnedBookCollectionResponse>> getAllCollections() {
         logger.info("Fetching all book collections");
         List<OwnedBookCollectionResponse> bookCollections = collectionService.getAllCollections();
@@ -39,21 +42,15 @@ public class BookCollectionController {
     }
 
     @GetMapping("/title")
+    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
     public ResponseEntity<OwnedBookCollectionResponse> getCollectionByTitle(@RequestParam String title) {
         logger.info("Fetching book collection with title: {}", title);
         OwnedBookCollectionResponse bookCollection = collectionService.getCollectionByTitle(title);
         return new ResponseEntity<>(bookCollection, HttpStatus.OK);
     }
 
-  /*  @GetMapping("/type")
-    ResponseEntity<List<OwnedBookCollectionResponse>> getCollectionsByType(@RequestParam BookCollectionType type) {
-        logger.info("Fetching book collection with title: {}", type);
-        List<OwnedBookCollectionResponse> bookCollection = collectionService.getCollectionByType(type);
-        return new ResponseEntity<>(bookCollection, HttpStatus.OK);
-    }*/
-
-
     @GetMapping("{id}")
+    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
     public ResponseEntity<OwnedBookCollectionResponse> getCollection(@PathVariable Long id) {
         logger.info("Fetching book collection with id: {}", id);
         OwnedBookCollectionResponse bookCollectionDto = collectionService.getCollectionById(id);
@@ -61,6 +58,7 @@ public class BookCollectionController {
     }
 
     @PutMapping("/update/{id}")
+    @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<OwnedBookCollectionResponse> updateCollection(
             @PathVariable Long id,
             @RequestBody @Valid OwnedBookCollectionRequest collectionRequest
@@ -71,6 +69,7 @@ public class BookCollectionController {
     }
 
     @DeleteMapping("/delete/{id}")
+    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
     public ResponseEntity<Void> deleteCollection(@PathVariable Long id) {
         logger.info("Deleting book collection with id: {}", id);
         collectionService.deleteById(id);

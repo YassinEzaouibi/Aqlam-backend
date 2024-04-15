@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,6 +24,7 @@ public class HybridDealCollection {
 
 
     @PostMapping("/add")
+    @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<HybridDealResponse> createHybridDeal(@RequestBody @Valid HybridDealRequest hybridDealRequest){
         logger.info("Creating a new book deal this data (from addBookDeal methode) : {}", hybridDealRequest);
         HybridDealResponse hybridDealRequest1 = hybridDealService.add(hybridDealRequest);
@@ -30,6 +32,7 @@ public class HybridDealCollection {
     }
 
     @GetMapping("/all")
+    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
     public ResponseEntity<List<HybridDealResponse>> retrieveAllHybridDeals(){
         logger.info("Fetching all book deals");
         List<HybridDealResponse> hybridDealRequest1 = hybridDealService.getAllHybridDeals();
@@ -37,6 +40,7 @@ public class HybridDealCollection {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
     public ResponseEntity<HybridDealResponse> retrieveHybridDeal(@PathVariable Long id) {
         logger.info("Fetching Hybrid Deal with id: {}", id);
         HybridDealResponse hybridDeal = hybridDealService.getHybridDealById(id);
@@ -44,6 +48,7 @@ public class HybridDealCollection {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<Void> deleteHybridDeal(@PathVariable Long id) {
         logger.info("Delete Hybrid Deal with id: {}", id);
         hybridDealService.deleteDealById(id);
@@ -51,6 +56,7 @@ public class HybridDealCollection {
     }
 
     @PutMapping("/{id}/accept")
+    @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<HybridDealResponse> acceptDeal(@PathVariable Long id) {
         logger.info("Fetching all accepted Deals");
         HybridDealResponse hybridDeal = hybridDealService.acceptDeal(id);
@@ -58,6 +64,7 @@ public class HybridDealCollection {
     }
 
     @PutMapping("/{id}/reject")
+    @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<HybridDealResponse> rejectDeal(@PathVariable Long id) {
         logger.info("Fetching all rejected Deals");
         HybridDealResponse hybridDealResponse = hybridDealService.rejectDeal(id);
@@ -65,6 +72,7 @@ public class HybridDealCollection {
     }
 
     @GetMapping("/accepted/{userId}")
+    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
     public ResponseEntity<List<HybridDealResponse>> getAllAcceptedDeals(@PathVariable Long userId) {
         logger.info("Fetching all accepted Deals for user: {}", userId);
         List<HybridDealResponse> hybridDeals = hybridDealService.getAllAcceptedDeals(userId);
@@ -72,6 +80,7 @@ public class HybridDealCollection {
     }
 
     @GetMapping("/rejected/{userId}")
+    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
     public ResponseEntity<List<HybridDealResponse>> getAllRejectedDeals(@PathVariable Long userId) {
         logger.info("Fetching all rejected Deals for user: {}", userId);
         List<HybridDealResponse> hybridDeals = hybridDealService.getAllRejectedDeals(userId);
@@ -79,6 +88,7 @@ public class HybridDealCollection {
     }
 
     @GetMapping("/pending/{userId}")
+    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
     public ResponseEntity<List<HybridDealResponse>> getAllPendingDeals(@PathVariable Long userId) {
         logger.info("Fetching all pending Deals for user: {}", userId);
         List<HybridDealResponse> hybridDeals = hybridDealService.getAllPendedDeals(userId);

@@ -1,5 +1,6 @@
 package aqlaam.version2.model.actors;
 
+import aqlaam.version2.model.enums.AccountType;
 import aqlaam.version2.model.enums.Sex;
 import jakarta.persistence.*;
 import lombok.*;
@@ -13,7 +14,7 @@ import java.util.Date;
 @NoArgsConstructor
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-public abstract class Person {
+public class Person {
 
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE)
@@ -38,5 +39,9 @@ public abstract class Person {
     @Column(name = "sex", nullable = false)
     @Enumerated(EnumType.STRING)
     private Sex sex;
+
+    @Column(name = "account_type", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private AccountType accountType;
 
 }

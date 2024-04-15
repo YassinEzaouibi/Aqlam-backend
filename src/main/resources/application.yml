@@ -1,8 +1,15 @@
 spring:
+
+#  security:
+#    user:
+#      name: yasso
+#      password: yasso
+
   datasource:
     url: jdbc:postgresql://localhost:5432/platform-aqlaam
     username: postgres
     password: yasso
+
   jpa:
     hibernate:
       ddl-auto: update

@@ -3,7 +3,6 @@ package aqlaam.version2.model.actors;
 import aqlaam.version2.model.Book;
 import aqlaam.version2.model.collections.FavoriteBookCollection;
 import aqlaam.version2.model.collections.OwnedBookCollection;
-import aqlaam.version2.model.enums.AccountType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -39,10 +38,6 @@ public class User extends Person {
     @JsonManagedReference
     @OneToMany(mappedBy = "user")
     private List<Book> books = new ArrayList<>();
-
-    @Column(name = "account_type", nullable = false)
-    @Enumerated(EnumType.STRING)
-    private AccountType accountType = AccountType.USER;
 
     @JsonIgnore
     @Column(name = "is_deleted", nullable = false, columnDefinition = "boolean default false")

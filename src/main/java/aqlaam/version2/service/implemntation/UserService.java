@@ -5,12 +5,14 @@ import aqlaam.version2.dto.response.UserResponse;
 import aqlaam.version2.exception.CustomNotFoundException;
 import aqlaam.version2.mapper.UserMapper;
 import aqlaam.version2.model.actors.User;
+import aqlaam.version2.model.enums.AccountType;
 import aqlaam.version2.repo.UserRepository;
 import aqlaam.version2.service.interfaces.IUserService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,11 +23,12 @@ import java.util.Optional;
 public class UserService implements IUserService {
 
     private final UserRepository userRepository;
-
     private final UserMapper userMapper;
-    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
-    private static final String USER_NOT_FOUND = "User not found";
-    private static final String EMAIL_ALREADY_EXIST = "User already exists with same email";
+    private final PasswordEncoder passwordEncoder;
+
+    public static final Logger logger = LoggerFactory.getLogger(UserService.class);
+    public static final String USER_NOT_FOUND = "User not found";
+    public static final String EMAIL_ALREADY_EXIST = "User already exists with same email";
 
     @Override
     public List<UserResponse> getAllUsers() {
@@ -42,23 +45,23 @@ public class UserService implements IUserService {
         User userEntity = userMapper.toEntity(userDto);
 
         // check if user exists on the database with an existing email
-        Optional<User> userEntityOptionalEmail = userRepository.findByEmail(userEntity.getEmail());
-        if(userEntityOptionalEmail.isPresent()){
+        Optional<User> userEntityOptionalEmail = userRepository.findUserByEmailAndDeletedFalse(userEntity.getEmail());
+        if (userEntityOptionalEmail.isPresent()) {
             throw new CustomNotFoundException(EMAIL_ALREADY_EXIST, HttpStatus.BAD_REQUEST);
         }
 
         // check if user exists on the database with an existing username
         Optional<User> userEntityOptionalUserName = userRepository.findByUserName(userEntity.getUserName());
-        if(userEntityOptionalUserName.isPresent()){
+        if (userEntityOptionalUserName.isPresent()) {
             throw new CustomNotFoundException("User already exists with same username", HttpStatus.BAD_REQUEST);
         }
 
-
+        userEntity.setAccountType(AccountType.USER);
+        userEntity.setPassword(passwordEncoder.encode(userDto.getPassword()));
         User savedUserEntity = userRepository.save(userEntity);
         logger.info("User created with id: {}", savedUserEntity.getId());
         return userMapper.toDto1(savedUserEntity);
     }
-
 
 
     @Override
@@ -68,21 +71,18 @@ public class UserService implements IUserService {
 
         Optional<User> optionalUser = userRepository.findUserByDeletedIsFalseAndId(id);
         User existingUser = optionalUser.orElseThrow(() -> {
-            logger.error("User not found with id: {}", id);
+            logger.error( USER_NOT_FOUND + " with id: {}", id);
             return new CustomNotFoundException(USER_NOT_FOUND, HttpStatus.NOT_FOUND);
         });
 
-        Optional<User> userOptional1 = userRepository.findByEmail(
-                user.getEmail());
-        if (userOptional1.isPresent()) {
-            logger.error(EMAIL_ALREADY_EXIST);
+        Optional<User> userOptional1 = userRepository.findUserByEmailAndDeletedFalse(user.getEmail());
+        if (userOptional1.isPresent() && !userOptional1.get().getId().equals(id)) {
             throw new CustomNotFoundException(EMAIL_ALREADY_EXIST, HttpStatus.BAD_REQUEST);
         }
 
-        existingUser.setEmail(user.getEmail());
         existingUser.setFirstName(user.getFirstName());
         existingUser.setLastName(user.getLastName());
-        existingUser.setPassword(user.getPassword());
+        existingUser.setPassword(passwordEncoder.encode(user.getPassword()));
         existingUser.setSex(user.getSex());
         existingUser.setDateOfBirth(user.getDateOfBirth());
 
@@ -106,7 +106,7 @@ public class UserService implements IUserService {
     @Override
     public UserResponse getUserByEmail(String email) {
         logger.info("Fetching user with email: {}", email);
-        Optional<User> optionalUser = userRepository.findByEmail(email);
+        Optional<User> optionalUser = userRepository.findUserByEmailAndDeletedFalse(email);
         if (optionalUser.isEmpty()) {
             logger.error("User not found with email: {}", email);
             throw new CustomNotFoundException(USER_NOT_FOUND, HttpStatus.NOT_FOUND);
@@ -119,7 +119,7 @@ public class UserService implements IUserService {
         logger.info("Deleting user with id: {}", id);
         Optional<User> optionalUser = userRepository.findUserByDeletedIsFalseAndId(id);
         if (optionalUser.isEmpty()) {
-            logger.error("User not found with id: {}", id);
+            logger.error( USER_NOT_FOUND + " with id: {}", id);
             throw new CustomNotFoundException(USER_NOT_FOUND, HttpStatus.NOT_FOUND);
         }
         userRepository.deleteById(id);
@@ -136,6 +136,7 @@ public class UserService implements IUserService {
         }
         return userMapper.toDto1(optionalUser.get());
     }
+
 
 }
 

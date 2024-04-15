@@ -2,6 +2,7 @@ package aqlaam.version2.dto.response;
 
 import aqlaam.version2.model.actors.User;
 import aqlaam.version2.model.enums.Sex;
+import lombok.Builder;
 import lombok.Value;
 
 import java.io.Serializable;
@@ -12,6 +13,7 @@ import java.util.List;
  * DTO for {@link User}
  */
 @Value
+@Builder
 public class UserResponse implements Serializable {
     Long id;
     String firstName;

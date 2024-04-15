@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,6 +23,7 @@ public class AdminService implements IAdminService {
 
     private final AdminRepository adminRepository;
     private final AdminMapper adminMapper;
+    private final PasswordEncoder passwordEncoder;
 
     private static final Logger logger = LoggerFactory.getLogger(AdminService.class);
     private static final String ADMIN_NOT_FOUND = "Admin not found";
@@ -62,31 +64,30 @@ public class AdminService implements IAdminService {
         if (adminOptional.isPresent()){
             throw new CustomNotFoundException("Admin already existe with this email", HttpStatus.BAD_REQUEST);
         }
+        admin.setPassword(passwordEncoder.encode(adminDto.getPassword()));
         Admin savedAdmin = adminRepository.save(admin);
         return adminMapper.toDto(savedAdmin);
     }
 
     @Override
     public AdminDto update(Long id, AdminDto adminDto) {
-
         Admin admin = adminMapper.toEntity(adminDto);
 
         Optional<Admin> optionalAdmin = adminRepository.findAdminByIdAndDeletedFalse(id);
-        Admin exestingAdmin = optionalAdmin.orElseThrow(() -> new CustomNotFoundException(ADMIN_NOT_FOUND, HttpStatus.NOT_FOUND));
+        Admin existingAdmin = optionalAdmin.orElseThrow(() -> new CustomNotFoundException(ADMIN_NOT_FOUND, HttpStatus.NOT_FOUND));
 
-        Optional<Admin> optionalAdmin2 = adminRepository.findAdminByEmailAndDeletedFalse(admin.getEmail());
-        if (optionalAdmin2.isPresent()){
-            throw new CustomNotFoundException("Admin already existe with this email", HttpStatus.BAD_REQUEST);
+        Optional<Admin> optionalAdminWithEmail = adminRepository.findAdminByEmailAndDeletedFalse(admin.getEmail());
+        if (optionalAdminWithEmail.isPresent() && !optionalAdminWithEmail.get().getId().equals(id)){
+            throw new CustomNotFoundException("Admin already exist with this email", HttpStatus.BAD_REQUEST);
         }
 
-        exestingAdmin.setFirstName(admin.getFirstName());
-        exestingAdmin.setLastName(admin.getLastName());
-        exestingAdmin.setEmail(admin.getEmail());
-        exestingAdmin.setPassword(admin.getPassword());
-        exestingAdmin.setDateOfBirth(admin.getDateOfBirth());
-        exestingAdmin.setAccountType(admin.getAccountType());
+        existingAdmin.setFirstName(admin.getFirstName());
+        existingAdmin.setLastName(admin.getLastName());
+        existingAdmin.setPassword(passwordEncoder.encode(admin.getPassword()));
+        existingAdmin.setDateOfBirth(admin.getDateOfBirth());
+        existingAdmin.setAccountType(admin.getAccountType());
 
-        Admin savedAdmin = adminRepository.save(exestingAdmin);
+        Admin savedAdmin = adminRepository.save(existingAdmin);
         return adminMapper.toDto(savedAdmin);
     }
 
