@@ -7,7 +7,6 @@ import aqlaam.version2.model.deals.HybridDeal;
 import org.mapstruct.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
 public interface HybridDealMapper {
