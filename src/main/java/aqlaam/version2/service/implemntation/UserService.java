@@ -71,7 +71,7 @@ public class UserService implements IUserService {
 
         Optional<User> optionalUser = userRepository.findUserByDeletedIsFalseAndId(id);
         User existingUser = optionalUser.orElseThrow(() -> {
-            logger.error( USER_NOT_FOUND + " with id: {}", id);
+            logger.error(USER_NOT_FOUND + " with id: {}", id);
             return new CustomNotFoundException(USER_NOT_FOUND, HttpStatus.NOT_FOUND);
         });
 
@@ -119,7 +119,6 @@ public class UserService implements IUserService {
         logger.info("Deleting user with id: {}", id);
         Optional<User> optionalUser = userRepository.findUserByDeletedIsFalseAndId(id);
         if (optionalUser.isEmpty()) {
-            logger.error( USER_NOT_FOUND + " with id: {}", id);
             throw new CustomNotFoundException(USER_NOT_FOUND, HttpStatus.NOT_FOUND);
         }
         userRepository.deleteById(id);

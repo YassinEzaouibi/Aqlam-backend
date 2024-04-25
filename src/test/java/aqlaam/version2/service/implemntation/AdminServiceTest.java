@@ -1,13 +1,11 @@
 package aqlaam.version2.service.implemntation;
 
 import aqlaam.version2.dto.AdminDto;
-import aqlaam.version2.exception.CustomNotFoundException;
 import aqlaam.version2.mapper.AdminMapper;
 import aqlaam.version2.model.actors.Admin;
 import aqlaam.version2.model.enums.AccountType;
 import aqlaam.version2.model.enums.Sex;
 import aqlaam.version2.repo.AdminRepository;
-import aqlaam.version2.service.implemntation.AdminService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

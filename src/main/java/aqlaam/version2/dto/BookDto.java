@@ -18,6 +18,7 @@ import java.time.LocalDate;
 @Builder
 public class BookDto implements Serializable {
 
+    Long id;
     @NotBlank(message = "Title is mandatory")
     String title;
 

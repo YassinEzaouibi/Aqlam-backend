@@ -5,12 +5,12 @@ spring:
     username: postgres
     password: yasso
 
-  jpa:
-    hibernate:
-      ddl-auto: update
-    properties:
+    jpa:
       hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
+        ddl-auto: update
+      properties:
+        hibernate:
+          dialect: org.hibernate.dialect.PostgreSQLDialect
 
 server:
   port: 8008

@@ -23,5 +23,4 @@ public class BookDealResponse implements Serializable {
     Long firstUserCollectionId;
     Long secondUserCollectionId;
     Boolean isDeleted;
-
 }

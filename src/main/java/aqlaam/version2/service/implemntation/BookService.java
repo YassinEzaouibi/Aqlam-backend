@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +26,7 @@ public class BookService implements IBookService {
     private final BookMapper bookMapper;
     private final UserRepository userRepository;
 
-    private final String BOOK_NOT_FOUND = "Book not found";
+    private static final String BOOK_NOT_FOUND = "Book not found";
     private static final Logger logger = LoggerFactory.getLogger(BookService.class);
 
     @Override
@@ -68,7 +67,7 @@ public class BookService implements IBookService {
 
         Optional<Book> bookOptional1 = bookRepository.findBookByReferenceAndDeletedIsFalse(book.getReference());
         if (bookOptional1.isPresent()) {
-            throw new CustomNotFoundException("Book already exists with same reference" + bookDto.getReference() , HttpStatus.BAD_REQUEST);
+            throw new CustomNotFoundException("Book already exists with same reference" + bookDto.getReference(), HttpStatus.BAD_REQUEST);
         }
         existingBook.setTitle(book.getTitle());
         existingBook.setAuthor(book.getAuthor());
@@ -91,7 +90,7 @@ public class BookService implements IBookService {
         logger.info("Fetching book with title: {}", title);
         Optional<Book> optionalBook = bookRepository.findBookByTitle(title);
         if (optionalBook.isEmpty()) {
-            throw new CustomNotFoundException(BOOK_NOT_FOUND + " with title: " + title , HttpStatus.NOT_FOUND);
+            throw new CustomNotFoundException(BOOK_NOT_FOUND + " with title: " + title, HttpStatus.NOT_FOUND);
         }
         return bookMapper.toDto(optionalBook.get());
     }
@@ -109,6 +108,18 @@ public class BookService implements IBookService {
     public List<BookDto> getBooksByAuthor(String author) {
         logger.info("Fetching books with category: {}", author);
         List<Book> books = bookRepository.findBooksByAuthor(author);
+        return books.stream()
+                .map(bookMapper::toDto)
+                .toList();
+    }
+
+    @Override
+    public List<BookDto> getAllBooksByIdUser(Long id) {
+        logger.info("Fetching all books by user with id: {}", id);
+        Optional<User> optionalUser = userRepository.findById(id);
+        User user = optionalUser.orElseThrow(
+                () -> new CustomNotFoundException("User not found with this id: " + id, HttpStatus.NOT_FOUND));
+        List<Book> books = bookRepository.findBooksByUser(user);
         return books.stream()
                 .map(bookMapper::toDto)
                 .toList();

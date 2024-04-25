@@ -29,7 +29,7 @@ public class AdminController {
 
     @PostMapping("/add")
     @PreAuthorize("hasAuthority('MANAGER')")
-    public ResponseEntity<AdminDto> addAdmin(@RequestBody @Valid AdminDto admin){
+    public ResponseEntity<AdminDto> addAdmin(@RequestBody @Valid AdminDto admin) {
         logger.info("this is the account type: {}", admin.getAccountType());
         AdminDto adminDto = adminService.add(admin);
         return new ResponseEntity<>(adminDto, HttpStatus.CREATED);
@@ -37,21 +37,21 @@ public class AdminController {
 
     @GetMapping("/admins")
     @PreAuthorize("hasAuthority('MANAGER')")
-    public ResponseEntity<List<AdminDto>> getAllAdmins(){
+    public ResponseEntity<List<AdminDto>> getAllAdmins() {
         List<AdminDto> admins = adminService.getAllAdmins();
         return new ResponseEntity<>(admins, HttpStatus.OK);
     }
 
     @GetMapping("/managers")
     @PreAuthorize("hasAuthority('MANAGER')")
-    public ResponseEntity<List<AdminDto>> getAllManagers(){
+    public ResponseEntity<List<AdminDto>> getAllManagers() {
         List<AdminDto> managers = adminService.getAllManagers();
         return new ResponseEntity<>(managers, HttpStatus.OK);
     }
 
     @GetMapping("/all")
     @PreAuthorize("hasAuthority('MANAGER')")
-    public ResponseEntity<List<AdminDto>> getAll(){
+    public ResponseEntity<List<AdminDto>> getAll() {
         List<AdminDto> admins = adminService.getAllAdmins();
         List<AdminDto> managers = adminService.getAllManagers();
         List<AdminDto> all = new ArrayList<>();
@@ -62,28 +62,32 @@ public class AdminController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('MANAGER')")
-    public ResponseEntity<AdminDto> getAdminById(@PathVariable Long id){
+    public ResponseEntity<AdminDto> getAdminById(@PathVariable Long id) {
         AdminDto admin = adminService.getAdminById(id);
         return new ResponseEntity<>(admin, HttpStatus.OK);
     }
 
     @GetMapping("/email")
     @PreAuthorize("hasAuthority('MANAGER')")
-    public ResponseEntity<AdminDto> getAdminByEmail(@RequestParam String email){
+    public ResponseEntity<AdminDto> getAdminByEmail(@RequestParam String email) {
         AdminDto admin = adminService.getAdminByEmail(email);
         return new ResponseEntity<>(admin, HttpStatus.OK);
     }
 
     @PutMapping("/update/{id}")
     @PreAuthorize("hasAuthority('MANAGER')")
-    public ResponseEntity<AdminDto> updateAdmin(@PathVariable Long id, @RequestBody @Valid AdminDto admin){
+    public ResponseEntity<AdminDto> updateAdmin(@PathVariable Long id, @RequestBody @Valid AdminDto admin) {
         AdminDto updatedAdmin = adminService.update(id, admin);
         return new ResponseEntity<>(updatedAdmin, HttpStatus.OK);
     }
 
 
-
-
+    @DeleteMapping("/delete/{id}")
+    @PreAuthorize("hasAuthority('MANAGER')")
+    public ResponseEntity<Void> deleteAdmin(@PathVariable Long id) {
+        adminService.deleteById(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 
 
 }

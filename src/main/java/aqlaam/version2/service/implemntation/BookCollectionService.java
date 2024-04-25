@@ -132,10 +132,7 @@ public class BookCollectionService implements IBookCollectionService {
     public void deleteById(Long id) {
         logger.info("Deleting book collection with id: {}", id);
         Optional<OwnedBookCollection> optionalBookCollection = collectionRepository.findByDeletedIsFalseAndId(id);
-        OwnedBookCollection ownedBookCollection = optionalBookCollection.orElseThrow(() -> {
-            logger.error("Book collection not found with id: {}", id);
-            return new CustomNotFoundException(COLLECTION_NOT_FOUND, HttpStatus.NOT_FOUND);
-        });
+        OwnedBookCollection ownedBookCollection = optionalBookCollection.orElseThrow(() -> new CustomNotFoundException(COLLECTION_NOT_FOUND, HttpStatus.NOT_FOUND));
         ownedBookCollection.setDeleted(true);
         collectionRepository.save(ownedBookCollection);
         logger.info("Book collection deleted with id: {}", id);
@@ -145,10 +142,7 @@ public class BookCollectionService implements IBookCollectionService {
     public OwnedBookCollectionResponse getCollectionById(Long id) {
         logger.info("Fetching book collection with id: {}", id);
         OwnedBookCollection ownedBookCollection = collectionRepository.findByDeletedIsFalseAndId(id)
-                .orElseThrow(() -> {
-                    logger.error("Book collection not found with id: {}", id);
-                    return new CustomNotFoundException(COLLECTION_NOT_FOUND, HttpStatus.NOT_FOUND);
-                });
+                .orElseThrow(() -> new CustomNotFoundException(COLLECTION_NOT_FOUND, HttpStatus.NOT_FOUND));
         return collectionMapper.toDto1(ownedBookCollection);
     }
 
@@ -164,11 +158,4 @@ public class BookCollectionService implements IBookCollectionService {
         return collectionMapper.toDto1(ownedBookCollection);
     }
 
-    /*public List<OwnedBookCollectionResponse> getCollectionByType(BookCollectionType type) {
-        logger.info("Fetching book collection with type: {}", type);
-        List<OwnedBookCollection> ownedBookCollections = collectionRepository.findByDeletedIsFalseAndType(type);
-        return ownedBookCollections.stream()
-                .map(collectionMapper::entityToResponse)
-                .toList();
-    }*/
 }

@@ -75,4 +75,11 @@ public class BookController {
         bookService.deleteById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
+    ResponseEntity<List<BookDto>> retrieveBooksByIdUser(@PathVariable Long id) {
+        List<BookDto> books = bookService.getAllBooksByIdUser(id);
+        return new ResponseEntity<>(books, HttpStatus.OK);
+    }
 }

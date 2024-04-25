@@ -15,7 +15,9 @@ import java.util.Date;
  */
 @Builder
 @Value
-public class AdminDto implements Serializable{
+public class AdminDto implements Serializable {
+
+    Long id;
 
     @NotBlank(message = "First name is mandatory")
     @Size(min = 2, max = 20, message = "First name must be between 2 and 15 characters")
@@ -33,7 +35,7 @@ public class AdminDto implements Serializable{
     @NotBlank(message = "Password is mandatory")
     @Size(min = 8, message = "Password must be at least 8 characters long")
     @Pattern(
-            regexp = "^(?=.*[0-9])(?=.*[a-zA-Z])(?=\\S+$).{6,12}$",
+            regexp = "^(?=.*\\d)(?=.*[a-zA-Z])(?=\\S+$).{6,12}$",
             message = "Password must contain at least 8 characters, one digit, one lowercase, one uppercase and one special character"
     )
     String password;

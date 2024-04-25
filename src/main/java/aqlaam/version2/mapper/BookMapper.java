@@ -7,9 +7,11 @@ import org.mapstruct.*;
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
 public interface BookMapper {
 
+    @Mapping(source = "id", target = "id")
     @Mapping(source = "userId", target = "user.id")
     Book toEntity(BookDto bookDto);
 
+    @Mapping(source = "id", target = "id")
     @InheritInverseConfiguration(name = "toEntity")
     BookDto toDto(Book book);
 

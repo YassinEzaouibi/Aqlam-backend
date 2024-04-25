@@ -25,7 +25,7 @@ public class HybridDealCollection {
 
     @PostMapping("/add")
     @PreAuthorize("hasAuthority('USER')")
-    public ResponseEntity<HybridDealResponse> createHybridDeal(@RequestBody @Valid HybridDealRequest hybridDealRequest){
+    public ResponseEntity<HybridDealResponse> createHybridDeal(@RequestBody @Valid HybridDealRequest hybridDealRequest) {
         logger.info("Creating a new book deal this data (from addBookDeal methode) : {}", hybridDealRequest);
         HybridDealResponse hybridDealRequest1 = hybridDealService.add(hybridDealRequest);
         return new ResponseEntity<>(hybridDealRequest1, HttpStatus.CREATED);
@@ -33,7 +33,7 @@ public class HybridDealCollection {
 
     @GetMapping("/all")
     @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
-    public ResponseEntity<List<HybridDealResponse>> retrieveAllHybridDeals(){
+    public ResponseEntity<List<HybridDealResponse>> retrieveAllHybridDeals() {
         logger.info("Fetching all book deals");
         List<HybridDealResponse> hybridDealRequest1 = hybridDealService.getAllHybridDeals();
         return new ResponseEntity<>(hybridDealRequest1, HttpStatus.CREATED);

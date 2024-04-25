@@ -10,6 +10,7 @@ import java.util.List;
  */
 @Value
 public class OwnedBookCollectionResponse implements Serializable {
+    Long id;
     String title;
     String description;
     List<Long> bookIds;

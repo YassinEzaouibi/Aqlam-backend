@@ -16,12 +16,13 @@ public class JWTHelper {
 
     Algorithm algorithm = Algorithm.HMAC256(SECRET);
 
-    public String generateAccessToken(String email, List<String> roles) {
+    public String generateAccessToken(String email, List<String> roles, Long userId) {
         return JWT.create()
                 .withSubject(email)
                 .withExpiresAt(new Date(System.currentTimeMillis() + JWT_ACCESS_TOKEN_EXPIRE))
                 .withIssuer(ISSUER)
                 .withClaim("roles", roles)
+                .withClaim("userId", userId)
                 .sign(algorithm);
     }
 

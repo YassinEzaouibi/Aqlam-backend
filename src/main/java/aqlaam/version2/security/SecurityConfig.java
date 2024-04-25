@@ -20,6 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -36,13 +37,17 @@ public class SecurityConfig {
                         SessionCreationPolicy.STATELESS
                 ))
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                        .requestMatchers("/api/v1/auth/**").permitAll()
+                        .requestMatchers("/auth/**").permitAll()
+//                        .requestMatchers("/login").permitAll()
                         .anyRequest().authenticated())
+//                        .anyRequest().permitAll()) //
                 .addFilter(new JWTAuthenticationFilter(authenticationManager(http.getSharedObject(AuthenticationConfiguration.class)), jwtHelper))
                 .addFilterBefore(new JWTAuthorisationFilter(jwtHelper), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(exceptionHandling ->
-                        exceptionHandling.authenticationEntryPoint((request, response, authException) ->
-                                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.getMessage())
+                        exceptionHandling.authenticationEntryPoint((request, response, authException) -> {
+                                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                                    response.setContentType("application/json");
+                                }
                         )
                 );
         return http.build();

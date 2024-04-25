@@ -36,6 +36,17 @@ public class PersonService implements IPersonService {
     }
 
     @Override
+    public PersonDto findPersonById(Long id) {
+        logger.info("Fetching user with id: {}", id);
+        Optional<Person> optionalUser = personRepository.findPersonById(id);
+        if (optionalUser.isEmpty()) {
+            logger.error("User not found with id: {}", id);
+            throw new CustomNotFoundException(USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+        }
+        return personMapper.toDto(optionalUser.get());
+    }
+
+    @Override
     public List<PersonDto> getAll() {
         List<Person> personList = personRepository.findAll();
         return personList.stream().map(personMapper::toDto).toList();
